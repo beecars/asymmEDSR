@@ -148,6 +148,7 @@ class checkpoint():
 
     def save_results(self, dataset, filename, save_list, scale):
         if self.args.save_results:
+            prefix = filename
             filename = self.get_path(
                 'results-{}'.format(dataset.dataset.name),
                 '{}_x{}_'.format(filename, scale)
@@ -157,7 +158,9 @@ class checkpoint():
             for v, p in zip(save_list, postfix):
                 normalized = v[0].mul(255 / self.args.rgb_range)
                 tensor_cpu = normalized.byte().permute(1, 2, 0).cpu()
-                self.queue.put(('{}{}.png'.format(filename, p), tensor_cpu))
+                imageio.imwrite(('..\\experiment\\test\\results-{}\\{}_x{}_{}.png'
+                                 .format(dataset.dataset.name,prefix,scale, p)), 
+                                 tensor_cpu.numpy())
 
 def quantize(img, rgb_range):
     pixel_range = 255 / rgb_range
@@ -167,14 +170,7 @@ def calc_psnr(sr, hr, scale, rgb_range, dataset=None):
     if hr.nelement() == 1: return 0
 
     diff = (sr - hr) / rgb_range
-    if dataset and dataset.dataset.benchmark:
-        shave = scale
-        if diff.size(1) > 1:
-            gray_coeffs = [65.738, 129.057, 25.064]
-            convert = diff.new_tensor(gray_coeffs).view(1, 3, 1, 1) / 256
-            diff = diff.mul(convert).sum(dim=1)
-    else:
-        shave = scale + 6
+    shave = scale + 6
 
     valid = diff[..., shave:-shave, shave:-shave]
     mse = valid.pow(2).mean()

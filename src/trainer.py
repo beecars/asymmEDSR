@@ -1,5 +1,6 @@
 import os
 import math
+import imageio
 from decimal import Decimal
 
 import utility
@@ -82,7 +83,6 @@ class Trainer():
         self.model.eval()
 
         timer_test = utility.timer()
-        if self.args.save_results: self.ckp.begin_background()
         for idx_data, d in enumerate(self.loader_test):
             for idx_scale, scale in enumerate(self.scale):
                 d.dataset.set_scale(idx_scale)
@@ -100,7 +100,9 @@ class Trainer():
 
                     if self.args.save_results:
                         self.ckp.save_results(d, filename[0], save_list, scale)
+                    
 
+                    
                 self.ckp.log[-1, idx_data, idx_scale] /= len(d)
                 best = self.ckp.log.max(0)
                 self.ckp.write_log(
@@ -115,9 +117,6 @@ class Trainer():
 
         self.ckp.write_log('Forward: {:.2f}s\n'.format(timer_test.toc()))
         self.ckp.write_log('Saving...')
-
-        if self.args.save_results:
-            self.ckp.end_background()
 
         if not self.args.test_only:
             self.ckp.save(self, epoch, is_best=(best[1][0, 0] + 1 == epoch))

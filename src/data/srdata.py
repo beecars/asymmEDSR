@@ -139,11 +139,18 @@ class SRData(data.Dataset):
                 scale=scale,
                 asymmetric = self.args.asymmetric
             )
-            if not self.args.no_augment: lr, hr = common.augment(lr, hr)
+            if not self.args.no_augment: 
+                if self.args.asymmetric:
+                    lr, hr = common.augment(lr, hr, rot=False)
+                else:
+                    lr, hr = common.augment(lr, hr)
         else:
-        # ASYMMETRIC CHANGES HERE?
-            ih, iw = lr.shape[:2]
-            hr = hr[0:ih * scale, 0:iw * scale]
+            if not self.args.asymmetric:
+                ih, iw = lr.shape[:2]
+                hr = hr[0:ih * scale, 0:iw * scale]
+            else:
+                ih, iw = lr.shape[:2]
+                hr = hr[0:ih * scale, 0:iw]
 
         return lr, hr
 
