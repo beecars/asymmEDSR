@@ -156,7 +156,7 @@ class checkpoint():
 
             postfix = ('SR', 'LR', 'HR')
             for v, p in zip(save_list, postfix):
-                normalized = v[0].mul(255 / self.args.rgb_range)
+                normalized = v[0]
                 tensor_cpu = normalized.byte().permute(1, 2, 0).cpu()
                 imageio.imwrite(('..\\experiment\\test\\results-{}\\{}_x{}_{}.png'
                                  .format(dataset.dataset.name,prefix,scale, p)), 
@@ -166,14 +166,27 @@ def quantize(img, rgb_range):
     pixel_range = 255 / rgb_range
     return img.mul(pixel_range).clamp(0, 255).round().div(pixel_range)
 
-def calc_psnr(sr, hr, scale, rgb_range, dataset=None):
-    if hr.nelement() == 1: return 0
+def calc_psnr(sr, hr, rgb_range):
+    # if hr.nelement() == 1: return 0
+
+    print()
+    print()
+    print("SR   SR  SR  SR  SR  SR  SR  SR")
+    print(sr)
+    print(sr.shape)
+    print()
+    print("HR   HR  HR  HR  HR  HR  HR  HR")
+    print(hr)
+    print(hr.shape)
+    print()
+    print()
 
     diff = (sr - hr) / rgb_range
-    shave = scale + 6
+    # shave = scale + 6
+    # valid = diff[..., shave:-shave, shave:-shave]
+    # mse = valid.pow(2).mean()
 
-    valid = diff[..., shave:-shave, shave:-shave]
-    mse = valid.pow(2).mean()
+    mse = diff.pow(2).mean()
 
     return -10 * math.log10(mse)
 
