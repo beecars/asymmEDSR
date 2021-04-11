@@ -169,18 +169,6 @@ def quantize(img, rgb_range):
 def calc_psnr(sr, hr, rgb_range):
     # if hr.nelement() == 1: return 0
 
-    print()
-    print()
-    print("SR   SR  SR  SR  SR  SR  SR  SR")
-    print(sr)
-    print(sr.shape)
-    print()
-    print("HR   HR  HR  HR  HR  HR  HR  HR")
-    print(hr)
-    print(hr.shape)
-    print()
-    print()
-
     diff = (sr - hr) / rgb_range
     # shave = scale + 6
     # valid = diff[..., shave:-shave, shave:-shave]

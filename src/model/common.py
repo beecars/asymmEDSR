@@ -77,7 +77,13 @@ class AsymmetricUpsampler(nn.Sequential):
     def __init__(self, conv, scale, n_feats, bias = True):
         
         m = []
-        m.append(conv(n_feats, 2*n_feats, 3))
-        m.append(nn.ConvTranspose2d(2*n_feats, 1, [2,3], stride = [2, 1], padding = [0, 1]))
+        if (scale & (scale - 1)) == 0:    # Is scale = 2^n?
+            for _ in range(int(math.log(scale, 2))):
+                m.append(conv(n_feats, 2*n_feats, 3))
+                m.append(nn.ConvTranspose2d(2*n_feats, 1, [2,3], stride = [2, 1], padding = [0, 1]))
+        
+        elif scale == 3:
+            m.append(conv(n_feats, 3*n_feats, 3))
+            m.append(nn.ConvTranspose2d(3*n_feats, 1, [3,3], stride = [3, 1], padding = [0, 1]))
         
         super(AsymmetricUpsampler, self).__init__(*m)
