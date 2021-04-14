@@ -11,8 +11,8 @@ def get_patch(*args, patch_size=96, scale=2, asymmetric = False):
     # lr image patch size
     ip = patch_size // scale
     # choose random coordinates from lr image w.r.t. patch size
-    ix = random.randrange(0, iw - ip + 1)
-    iy = random.randrange(0, ih - ip + 1)
+    ix = random.randrange(0, iw - ip)
+    iy = random.randrange(0, ih - ip)
     if asymmetric == False:
         # corresponding hr coordinates
         tx, ty = scale * ix, scale * iy

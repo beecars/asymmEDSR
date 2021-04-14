@@ -1,7 +1,7 @@
 # **Asymmetric Upsample EDSR**
 
 ## **Motivation.**
-Most recent super-resolution (SR) convnets all focus on SR with *symmetric* scaling factors, where both dimensions of an image are scaled equally. There are cases where an *asymmetric* scaling
+Recent super-resolution (SR) convnets all focus on SR with *symmetric* scaling factors, where both dimensions of an image are scaled equally. There are cases where an *asymmetric* scaling
 would be advantageous. Specifically, in 3D medical imaging a single axis is sometimes under-sampled relative to the others (typically to reduce radiation exposure). This leads to irregularly shaped voxels and poor resolution along one of the three spatial dimensions, which can inhibit medical image analysis tasks undertaken by humans or computers. 
 
 In this project I adapt an SR convnet to work with asymmetric scaling factors. I select EDSR for this task, but an asymmetric upsampling module like the one I implement here can be added to **any** SR convnet that uses so-called learned "post-upsampling" layer(s) in the tail of the network. 
@@ -50,8 +50,17 @@ class AsymmetricUpsampler(nn.Sequential):
     def __init__(self, conv, scale, n_feats, bias = True):
         
         m = []
-        m.append(conv(n_feats, 2*n_feats, 3))
-        m.append(nn.ConvTranspose2d(2*n_feats, 1, [2,3], stride = [2, 1], padding = [0, 1]))
+        if scale == 2: 
+            m.append(conv(n_feats, 2*n_feats, 3))
+            m.append(nn.ConvTranspose2d(2*n_feats, 1, [2,3], stride = [2, 1], padding = [0, 1]))
+        
+        elif scale == 3:
+            m.append(conv(n_feats, 3*n_feats, 3))
+            m.append(nn.ConvTranspose2d(3*n_feats, 1, [3,3], stride = [3, 1], padding = [0,1]))
+            
+        elif scale == 4: 
+            m.append(conv(n_feats, 4*n_feats, 3))
+            m.append(nn.ConvTranspose2d(4*n_feats, 1, [4,3], stride = [4, 1], padding = [0, 1]))
         
         super(AsymmetricUpsampler, self).__init__(*m)
 ```
