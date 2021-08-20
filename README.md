@@ -76,6 +76,4 @@ There are many other changes made throughout the remaining code that allow the `
 6. Fixed a bug on Windows in the `checkpoint()` class involving file system manipulations.
 7. Fixed a bug on Windows by disabling some of the multithread features.
 8. Fixed a bug on Windows using the `--test_only` mode. Now it actually works.
-
-Plus some little stuff I'm forgetting that I fixed when something broke along the way.
 ___
