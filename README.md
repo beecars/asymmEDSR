@@ -4,7 +4,7 @@
 Recent super-resolution (SR) convnets all focus on SR with *symmetric* scaling factors, where both dimensions of an image are scaled equally. There are cases where an *asymmetric* scaling
 would be advantageous. Specifically, in 3D medical imaging a single axis is sometimes under-sampled relative to the others (typically to reduce radiation exposure). This leads to irregularly shaped voxels and poor resolution along one of the three spatial dimensions, which can inhibit medical image analysis tasks undertaken by humans or computers. 
 
-In this project I adapt an SR convnet to work with asymmetric scaling factors. I select EDSR for this task, but an asymmetric upsampling module like the one I implement here can be added to **any** SR convnet that uses so-called learned "post-upsampling" layer(s) in the tail of the network. 
+In this project I adapt an SR convnet to work with asymmetric scaling factors. I select EDSR for this task, but an asymmetric upsampling module like the one I implement here can be added to **any** SR convnet that uses so-called learned "post-upsampling" layer(s) in the head of the network. 
 ___
 ## **Using the repo.**
 I recommend reading the documentation of the [original repo](https://github.com/twtygqyy/pytorch-edsr). The basic functionaliy is preserved here.
@@ -37,7 +37,7 @@ ___
 
 >`TLDR;` "... the modifications preserve the original EDSR with symmetric upscaling. The asymmetric modules and associated functions are switched on and off as needed with an `--asymmetric` boolean argument."
 
-I add an **optional** `AsymmetricUpsampler()` to the [official EDSR repo for PyTorch](https://github.com/twtygqyy/pytorch-edsr). The `AsymmetricUpsampler()` module is in `/src/model/common.py` and is a replacement for the default `Upsampler()` module, to be used in the "tail" of the network when it is constructed by `/src/model/edsr.py`. 
+I add an **optional** `AsymmetricUpsampler()` to the [official EDSR repo for PyTorch](https://github.com/twtygqyy/pytorch-edsr). The `AsymmetricUpsampler()` module is in `/src/model/common.py` and is a replacement for the default `Upsampler()` module, to be used in the "head" of the network when it is constructed by `/src/model/edsr.py`. 
 
 I remove many models, benchmarks, option arguments, etc from the original repository. I removed all the GAN and perceptual loss modules. The modifications preserve the original functioning of the EDSR with symmetric upscaling. The asymmetric modules and associated functions are switched on and off as needed with an `--asymmetric` boolean argument. Symmetric upsampling will still use the original `nn.PixelShuffle()` method and associated functions.
 
